@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio | Neil Glez</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+
+            font-family: "Outfit", sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+            font-weight: 400;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-image: url(bg_ab_d.png);
+            background-color: #f4f4f4;
+
+        }
+
+        .header {
+            display: flex;
+            position: absolute;
+            width: 100%;
+            justify-content: space-around;
+            align-items: center;
+            padding: 10px 20px;
+            color: #fff;
+            background-color: #2d0143;
+            z-index: 3;
+        }
+
+        .logo {
+            font-size: 24px;
+        }
+
+        .menu {
+            display: flex;
+            gap: 15px;
+        }
+
+        .menu a {
+            color: #fff;
+            text-decoration: none;
+            /* Elimina la decoración de texto */
+        }
+
+        .menu a:hover {
+            text-decoration: none;
+        }
+
+        .menu-toggle {
+            display: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 15px;
+            font-weight: bold;
+        }
+
+        .nav-menu ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            /* Elementos en horizontal */
+        }
+
+        .nav-menu li {
+            padding: 5px 15px;
+        }
+
+        .nav-menu a {
+            color: #ffffff;
+            text-decoration: none;
+        }
+
+        .nav-menu a:hover {
+            color: #3DC2EC;
+            text-decoration: none;
+        }
+
+        .data_slider {
+            display: flex;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+        }
+
+        .title_id {
+            margin: 0;
+            color: #3a3a3a;
+            font-family: "Outfit", sans-serif;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 0.9;
+        }
+
+        .title_id_span {
+            color: #000000;
+            margin: 0;
+            font-family: "Outfit", sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            line-height: 0.9;
+        }
+
+        .title_profil {
+            color: #000000;
+            margin: 3px 0px;
+            font-family: "Outfit", sans-serif;
+            font-size: 13px;
+            line-height: 0.9;
+        }
+
+        .profil {
+            color: #424242;
+            margin: 10px 0px;
+            font-family: "Outfit", sans-serif;
+            font-size: 12px;
+            font-weight: 400;
+            line-height: 1.2;
+            text-align: justify;
+        }
+
+
+        .data_web {
+            display: flex;
+            position: absolute;
+            width: 350px;
+            font-size: 24px;
+            margin-top: auto;
+            color: #ffffff;
+            margin-bottom: auto;
+            padding: 0px 0px 0px 50px;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .data_web p {
+            color: #C8ACD6;
+        }
+
+        .about-container {
+            display: flex;
+            position: relative;
+            width: 100%;
+            height: 100%;
+            justify-content: center;
+            text-align: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: url(bg_ab_d.png);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+
+
+        .about_display {
+            display: flex;
+            width: 1000px;
+            height: 700px;
+            padding: 0px;
+            margin: 0px auto;
+            background-color: #ffffff;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .column01 {
+            display: flex;
+            width: 30%;
+            height: auto;
+            padding: 0px;
+            margin: 0px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .column02 {
+            display: flex;
+            width: 70%;
+            height: auto;
+            padding: 0px;
+            margin: 0px;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .data_about01 {
+            display: flex;
+            width: 100%;
+            margin: 16px 14px;
+            justify-content: flex-start;
+            background-color: #ffffff;
+            transition: transform 0.5s ease-in-out;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: center;
+            align-items: center;
+        }
+
+        .data_about02 {
+            display: flex;
+            width: 100%;
+            margin: 16px 14px;
+            justify-content: center;
+            background-color: #ffffff;
+            transition: transform 0.5s ease-in-out;
+            flex-direction: column;
+            flex-wrap: wrap;
+            align-content: center;
+            align-items: center;
+        }
+
+        #model-viewer-01 {
+            position: relative;
+            width: 50%;
+        }
+
+        .contact_about {
+            display: flex;
+            width: 100%;
+            position: relative;
+            margin: 3px 0px 20px 0px;
+            flex-direction: column;
+            background-color: #ffffff;
+        }
+
+        .email_about {
+            display: flex;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .phone_about {
+            display: flex;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .icon_about {
+            display: block;
+            width: 18px;
+        }
+
+        .work_about {
+            display: flex;
+            width: 100%;
+            height: 28px;
+            position: relative;
+            margin: 0px;
+            flex-direction: row;
+            align-items: center;
+            align-content: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .employer_about {
+            display: block;
+            width: 35px;
+            margin: 10px 1px;
+        }
+
+        .cont_fecha_about {
+            width: 25px;
+        }
+
+        .fecha_about {
+            font-size: 7px;
+        }
+
+        .desktop {
+            display: block;
+        }
+
+        .movil {
+            display: none;
+        }
+
+        .center_form {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+
+
+        @media (max-width: 768px) {
+
+            body {
+                font-family: "Outfit", sans-serif;
+                font-size: 14px;
+                line-height: 1.5;
+                font-weight: 400;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+                background-color: #f4f4f4;
+                background-image: none;
+            }
+
+            .logo {
+                font-size: 18px;
+            }
+
+            .nav-menu {
+                display: none;
+                position: absolute;
+                top: 52px;
+                right: 0px;
+                background-color: #C8ACD697;
+                width: 200px;
+            }
+
+            .menu-toggle {
+                display: block;
+                margin-left: 20px;
+            }
+
+            .nav-menu.active {
+                display: block;
+                width: 100%;
+            }
+
+            .nav-menu ul {
+                display: flex;
+                flex-direction: column;
+                /* Elementos en vertical */
+            }
+
+            .nav-menu li {
+                padding: 10px;
+            }
+
+            .data_slider {
+                display: flex;
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                align-items: flex-start;
+            }
+
+            .title_id {
+                margin: 0;
+                color: #313131;
+                font-family: "Outfit", sans-serif;
+                font-size: 0.9rem;
+                line-height: 0.9;
+            }
+
+            .title_id_span {
+                color: #000000;
+                margin: 0;
+                font-family: "Outfit", sans-serif;
+                font-size: 0.9rem;
+                line-height: 0.9;
+            }
+
+
+            .data_web {
+                display: flex;
+                position: absolute;
+                width: 350px;
+                font-size: 18px;
+                margin-top: 68px;
+                color: #ffffff;
+                margin-bottom: auto;
+                padding: 0px 0px 0px 40px;
+                flex-direction: column;
+                z-index: 2;
+            }
+
+            .about-container {
+                position: relative;
+                width: 100%;
+                height: 100%;
+                overflow: auto;
+                background-color: #ffffff;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            }
+
+            .about_display {
+                display: flex;
+                position: relative;
+                padding: 0px;
+                top: 97px;
+                transition: transform 0.5s ease-in-out;
+                flex-wrap: nowrap;
+                overflow: auto;
+                flex-direction: column;
+            }
+
+            .column01 {
+                display: flex;
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 0px;
+                margin: 0px;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .column02 {
+                display: flex;
+                position: relative;
+                width: 100%;
+                height: auto;
+                padding: 0px;
+                margin: 0px;
+                transition: transform 0.5s ease-in-out;
+            }
+
+            .data_about01 {
+                display: flex;
+                position: relative;
+                width: 100%;
+                height: 350px;
+                margin: 16px 14px;
+                background-color: #ffffff;
+                transition: transform 0.5s ease-in-out;
+                flex-direction: column;
+                flex-wrap: nowrap;
+                align-content: center;
+                justify-content: center;
+                align-items: center;
+            }
+
+            .data_about02 {
+                display: flex;
+                width: 100%;
+                margin: 16px 14px;
+                justify-content: center;
+                background-color: #ffffff;
+                transition: transform 0.5s ease-in-out;
+                flex-direction: column;
+                flex-wrap: wrap;
+                align-content: center;
+                align-items: center;
+            }
+
+
+            #model-viewer-01,
+            #model-viewer-02,
+            #model-viewer-03 {
+                position: relative;
+                width: 100%;
+                height: 100%;
+            }
+
+            .header {
+                display: flex;
+                width: 100%;
+                align-items: center;
+                justify-content: center;
+                align-content: center;
+            }
+
+
+
+            .desktop {
+                display: none;
+            }
+
+            .movil {
+                display: block;
+            }
+
+        }
+
+
+        .contact-form {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            position: relative;
+            top: 25px;
+        }
+
+        .contact-form h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .contact-form label {
+            margin: 5px 0;
+            display: block;
+            font-weight: bold;
+        }
+
+        .contact-form input,
+        .contact-form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 0px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .contact-form button {
+            width: 100%;
+            padding: 10px;
+            background-color: #2b0446;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .contact-form button:hover {
+            background-color: #3e0269;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <div class="logo">Neil González Arriaga</div>
+        <div class="menu-toggle" onclick="toggleMenu()">☰</div>
+        <nav class="nav-menu" id="navMenu">
+            <ul>
+                <li><a href="portfolio.html">Home</a></li>
+                <li><a href="aboutme.html">About me</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    <div class="center_form">
+        <form class="contact-form" action="process.php" method="POST">
+            <h2>Contáctanos</h2>
+            <label for="name">Nombre:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="phone">Teléfono:</label>
+            <input type="tel" id="phone" name="phone" required>
+
+            <label for="email">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" required>
+
+            <label for="message">Mensaje:</label>
+            <textarea id="message" name="message" rows="4" required></textarea>
+
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.getElementById('navMenu');
+            menu.classList.toggle('active');
+        }
+    </script>
+    
+</body>
+
+</html>
