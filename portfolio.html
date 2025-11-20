@@ -64,19 +64,20 @@
             display: flex;
             position: absolute;
             width: 100%;
-            height: 65px;
+            height: 85px;
             margin: 0px auto;
             z-index: 5;
             align-content: center;
             flex-direction: row;
             justify-content: center;
+            background-color: #000000;
         }
 
         .logo {
             display: flex;
             position: relative;
             width: 1000px;
-            height: 60px;
+            height: 80px;
         }
 
         .logotipo {
@@ -122,11 +123,18 @@
             position: relative;
             width: 1000px;
             height: 100%;
-            margin: 0 auto;
+            margin: 30px auto 0px auto;
             padding: 0;
             flex-direction: column;
             overflow: hidden;
             align-items: center;
+        }
+
+        .title_header_section {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            justify-content: center;
         }
 
         .title_content {
@@ -294,6 +302,13 @@
 
         h3 {
             font-size: 30px;
+            font-weight: lighter;
+            color: #ffffff;
+            text-align: left;
+            line-height: 1;
+        }
+         h4 {
+            font-size: 26px;
             font-weight: lighter;
             color: #ffffff;
             text-align: left;
@@ -784,7 +799,7 @@
                 position: relative;
                 width: 100%;
                 height: 100%;
-                margin: 0;
+                margin: 30px auto 0px auto;
                 padding: 0;
                 flex-direction: column;
                 overflow: hidden;
@@ -1248,17 +1263,24 @@
 
 
         /* Estilos para móvil */
-        @media (max-width: 425px) {
+        @media (max-width: 468px) {
             .wrapper {
                 display: flex;
                 position: relative;
                 width: 100%;
                 height: 100%;
-                margin: 0;
+                margin: 30px 0px 0px 0px;
                 padding: 0;
                 flex-direction: column;
                 overflow: hidden;
             }
+
+             .title_header_section {
+            display: flex;
+            width: 100%;
+            flex-direction: column;
+            justify-content: center;
+        }
 
             .title_content {
                 display: flex;
@@ -1411,8 +1433,16 @@
                 line-height: 1;
             }
 
-            h5 {
+            h4 {
                 font-size: 14px;
+                font-weight: lighter;
+                color: #ffffff;
+                text-align: left;
+                line-height: 1;
+            }
+
+            h5 {
+                font-size: 13px;
                 font-weight: 300;
                 color: #ffffff;
                 text-align: left;
@@ -1703,7 +1733,13 @@
 
 <body class="animated-gradient">
     <header>
-        <div class="logo"><img class="logotipo fade-brand" src="neil.svg" alt="Neil González Arriaga"></div>
+        <div class="logo"><img class="logotipo fade-brand" src="neil.svg" alt="Neil González Arriaga">
+        <div class="title_header_section">
+                    <h4>CONTENIDOS DIGITALES</h4>
+                    <h5>Animación y modelado 3D | Edición de Video & Motion graphics | Web</h5>
+                </div>
+        </div>
+        
     </header>
     <main>
         <div class="wrapper_circlelife"><img class="circlelife" src="circlelife.svg" alt="circlelife"></div>
