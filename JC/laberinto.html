@@ -157,7 +157,7 @@ const createScene = async () => {
   ground.material = groundMat;
 
   // 🧱 Laberinto
-  await BABYLON.SceneLoader.ImportMeshAsync("", "./c01/laberinto", "laberinto.glb", scene);
+  await BABYLON.SceneLoader.ImportMeshAsync("", "./c01/laberinto/", "laberinto.glb", scene);
 
   // 🧍 Personajes
   const c1 = await loadCharacters(scene,"corre_man02.glb",1,1);
