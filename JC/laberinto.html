@@ -160,7 +160,7 @@ const createScene = async () => {
   await BABYLON.SceneLoader.ImportMeshAsync("", "./c01/laberinto/", "laberinto.glb", scene);
 
   // 🧍 Personajes
-  const c1 = await loadCharacters(scene,"corre_man02.glb",1,1);
+  const c1 = await loadCharacters(scene,"./c01/laberinto/corre_man02.glb",1,1);
   const c2 = await loadCharacters(scene,"character02.glb",1,40);
   const c3 = await loadCharacters(scene,"corre_m02.glb",1,10);
   const s1 = await loadCharacters(scene,"soldado_quieto.glb",1,20);
