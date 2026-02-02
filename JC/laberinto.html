@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Episodio 1 Fase 1:Prueba del Grupo Inicial</title>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+  <style>
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+    canvas { width:100%; height:100%; touch-action:none; }
+  </style>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("renderCanvas");
+const engine = new BABYLON.Engine(canvas, true);
+
+let touring = true;
+
+// 🎥 Enfoque cinematográfico
+function focusCamera(camera, target, radius = 16) {
+  BABYLON.Animation.CreateAndStartAnimation(
+    "camMove",
+    camera,
+    "target",
+    60,
+    40,
+    camera.target.clone(),
+    target.clone(),
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  );
+
+  BABYLON.Animation.CreateAndStartAnimation(
+    "camZoom",
+    camera,
+    "radius",
+    60,
+    40,
+    camera.radius,
+    radius,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  );
+}
+
+// 🎯 Hotspot visible + animado + click
+function createHotspot(mesh, camera, scene) {
+  const hotspot = BABYLON.MeshBuilder.CreateSphere(
+    "hotspot_"+mesh.name,
+    { diameter:0.6 },
+    scene
+  );
+
+  hotspot.position = mesh.getAbsolutePosition().add(new BABYLON.Vector3(0,2.2,0));
+
+  const mat = new BABYLON.StandardMaterial("hotspotMat_"+mesh.name, scene);
+  mat.emissiveColor = BABYLON.Color3.Red();
+  mat.alpha = 0.9;
+  hotspot.material = mat;
+
+  const pulse = new BABYLON.Animation(
+    "pulse","scaling",30,
+    BABYLON.Animation.ANIMATIONTYPE_VECTOR3,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CYCLE
+  );
+
+  pulse.setKeys([
+    { frame:0, value:new BABYLON.Vector3(1,1,1) },
+    { frame:15, value:new BABYLON.Vector3(1.5,1.5,1.5) },
+    { frame:30, value:new BABYLON.Vector3(1,1,1) }
+  ]);
+
+  hotspot.animations.push(pulse);
+  scene.beginAnimation(hotspot,0,30,true);
+
+  hotspot.actionManager = new BABYLON.ActionManager(scene);
+  hotspot.actionManager.registerAction(
+    new BABYLON.ExecuteCodeAction(
+      BABYLON.ActionManager.OnPickTrigger,
+      () => {
+        touring = false;
+        focusCamera(camera, mesh.getAbsolutePosition(), 14);
+      }
+    )
+  );
+}
+
+// 🧍 Personajes animados
+async function loadCharacters(scene, file, count, offsetX) {
+  const res = await BABYLON.SceneLoader.ImportMeshAsync("", "./", file, scene);
+  const src = res.meshes.find(m => m instanceof BABYLON.Mesh && m.skeleton);
+  if (!src) return [];
+
+  scene.beginAnimation(src.skeleton, 0, 100, true);
+
+  const arr = [];
+  for (let i=0;i<count;i++){
+    const c = src.clone(file+"_"+i);
+    c.skeleton = src.skeleton.clone(file+"_sk_"+i);
+    c.position.set(offsetX,0,i*6);
+    scene.beginAnimation(c.skeleton,0,100,true);
+    arr.push(c);
+  }
+  src.setEnabled(false);
+  return arr;
+}
+
+// 📦 Modelos estáticos individuales
+async function loadModel(scene, file, position) {
+  const res = await BABYLON.SceneLoader.ImportMeshAsync("", "./", file, scene);
+  const mesh = res.meshes.find(m => m instanceof BABYLON.Mesh);
+  mesh.position.copyFrom(position);
+  return mesh;
+}
+
+const createScene = async () => {
+  const scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color4(0.01,0.01,0.05,1);
+
+  // 📷 Cámara
+  const camera = new BABYLON.ArcRotateCamera("cam",
+    Math.PI/2, Math.PI/3, 160,
+    new BABYLON.Vector3(0,10,0), scene);
+  camera.attachControl(canvas,true);
+
+  camera.lowerBetaLimit = 0.15;
+  camera.upperBetaLimit = Math.PI/2.1;
+  camera.lowerRadiusLimit = 10;
+  camera.upperRadiusLimit = 300;
+  camera.panningSensibility = 0;
+  camera.inertia = 0.85;
+
+  // 🎬 Dolly inicial
+  scene.onBeforeRenderObservable.add(()=>{
+    if(camera.radius > 95 && touring) camera.radius -= 0.6;
+  });
+
+  canvas.addEventListener("pointerdown",()=> touring = false);
+
+  // 💡 Iluminación nocturna
+  const moon = new BABYLON.DirectionalLight("moon", new BABYLON.Vector3(-1,-2,-1), scene);
+  moon.position = new BABYLON.Vector3(50,100,50);
+  moon.intensity = 0.9;
+
+  const amb = new BABYLON.HemisphericLight("amb", new BABYLON.Vector3(0,1,0), scene);
+  amb.intensity = 0.18;
+
+  // 🌍 Suelo gris cinematográfico
+  const ground = BABYLON.MeshBuilder.CreateGround("g",{width:1000,height:1000},scene);
+  ground.position.y = -0.02;
+
+  const groundMat = new BABYLON.PBRMaterial("groundMat", scene);
+  groundMat.albedoColor = new BABYLON.Color3(0.1,0.1,0.1);
+  groundMat.roughness = 0.9;
+  groundMat.metallic = 0.0;
+  ground.material = groundMat;
+
+  // 🧱 Laberinto
+  await BABYLON.SceneLoader.ImportMeshAsync("", "./c01/laberinto", "laberinto.glb", scene);
+
+  // 🧍 Personajes
+  const c1 = await loadCharacters(scene,"corre_man02.glb",1,1);
+  const c2 = await loadCharacters(scene,"character02.glb",1,40);
+  const c3 = await loadCharacters(scene,"corre_m02.glb",1,10);
+  const s1 = await loadCharacters(scene,"soldado_quieto.glb",1,20);
+  const s2 = await loadCharacters(scene,"soldado_torre.glb",1,0);
+  const s3 = await loadCharacters(scene,"jefe_guardia.glb",1,-15);
+
+  // 🏗️ Elementos extra
+  const torre = await loadModel(scene,"torre_low.glb", new BABYLON.Vector3(0,0,0));
+  const ropa = await loadModel(scene,"ropa_box.glb", new BABYLON.Vector3(0,0,0));
+  const soldados_lab = await loadModel(scene,"soldados_laberinto.glb", new BABYLON.Vector3(0,0,0));
+
+  // 🎯 Hotspots
+  const allCharacters = [...c1,...c2,...c3,...s1,...s2,...s3];
+  allCharacters.forEach(m => createHotspot(m, camera, scene));
+  createHotspot(torre, camera, scene);
+
+  return scene;
+};
+
+createScene().then(scene => {
+  engine.runRenderLoop(()=> scene.render());
+});
+
+window.addEventListener("resize",()=> engine.resize());
+</script>
+</body>
+</html>
