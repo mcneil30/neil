@@ -161,16 +161,16 @@ const createScene = async () => {
 
   // 🧍 Personajes
   const c1 = await loadCharacters(scene,"./c01/laberinto/corre_man02.glb",1,1);
-  const c2 = await loadCharacters(scene,"character02.glb",1,40);
-  const c3 = await loadCharacters(scene,"corre_m02.glb",1,10);
-  const s1 = await loadCharacters(scene,"soldado_quieto.glb",1,20);
-  const s2 = await loadCharacters(scene,"soldado_torre.glb",1,0);
+  const c2 = await loadCharacters(scene,"./c01/laberinto/character02.glb",1,40);
+  const c3 = await loadCharacters(scene,"./c01/laberinto/corre_m02.glb",1,10);
+  const s1 = await loadCharacters(scene,"./c01/laberinto/soldado_quieto.glb",1,20);
+  const s2 = await loadCharacters(scene,"./c01/laberinto/soldado_torre.glb",1,0);
   const s3 = await loadCharacters(scene,"./c01/laberinto/jefe_guardia.glb",1,-15);
 
   // 🏗️ Elementos extra
-  const torre = await loadModel(scene,"torre_low.glb", new BABYLON.Vector3(0,0,0));
-  const ropa = await loadModel(scene,"ropa_box.glb", new BABYLON.Vector3(0,0,0));
-  const soldados_lab = await loadModel(scene,"soldados_laberinto.glb", new BABYLON.Vector3(0,0,0));
+  const torre = await loadModel(scene,"./c01/laberinto/torre_low.glb", new BABYLON.Vector3(0,0,0));
+  const ropa = await loadModel(scene,"./c01/laberinto/ropa_box.glb", new BABYLON.Vector3(0,0,0));
+  const soldados_lab = await loadModel(scene,"./c01/laberinto/soldados_laberinto.glb", new BABYLON.Vector3(0,0,0));
 
   // 🎯 Hotspots
   const allCharacters = [...c1,...c2,...c3,...s1,...s2,...s3];
