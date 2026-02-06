@@ -93,8 +93,8 @@ html, body {
   letter-spacing: .15em;
 }
 
-.si { color: #00ff6a; font-weight: 700; }
-.no { color: #ff3b3b; font-weight: 700; }
+.si { color: #00ff6a; font-size: 30px; font-weight: 700; }
+.no { color: #ff3b3b; font-size: 30px; font-weight: 700; }
 
 #logoFinal {
   width: 260px;
@@ -137,7 +137,7 @@ let step = 0;
 setTimeout(() => {
   logo.classList.add("show");
   sound.play();
-}, 3000);
+}, 1400);
 
 /* Click logo */
 logo.addEventListener("click", () => {
@@ -146,7 +146,7 @@ logo.addEventListener("click", () => {
 
   cambiarEscena(
     "./img/bg_presentacion.jpg",
-    `¿ESTÁS DISPUESTO <span class="big-bold">A TODO</span>?
+    `¿ESTÁS DISPUESTO <br><span class="big-bold">A TODO</span>?
      <div class="choice">
        <span class="si">SI</span>
        <span class="no">NO</span>
@@ -165,7 +165,7 @@ text.addEventListener("click", () => {
     setTimeout(() => {
       step = 3;
       mostrarLogoFinal();
-    }, 4000);
+    }, 3000);
   }
 
 });
