@@ -7,32 +7,86 @@
 <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
 <style>
-html, body { width:100%; height:100%; margin:0; overflow:hidden; }
-canvas { width:100%; height:100%; touch-action:none; }
+:root {
+  --ui-bg: rgba(0,0,0,0.65);
+  --ui-bg-hover: rgba(255,255,255,0.15);
+}
 
+html, body {
+  width:100%;
+  height:100%;
+  margin:0;
+  overflow:hidden;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+canvas {
+  width:100%;
+  height:100%;
+  touch-action:none;
+}
+
+/* CONTENEDOR UI */
 #ui {
   position: fixed;
-  top: 15px;
-  left: 15px;
+  top: 14px;
+  left: 14px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   z-index: 10;
 }
 
+/* BOTONES */
 #ui button {
-  padding: 8px 12px;
+  padding: clamp(6px, 1.5vw, 12px) clamp(10px, 2.5vw, 16px);
   border: none;
-  border-radius: 6px;
-  background: rgba(0,0,0,0.65);
+  border-radius: 10px;
+  background: var(--ui-bg);
   color: white;
   cursor: pointer;
-  font-size: 13px;
-  backdrop-filter: blur(5px);
+  font-size: clamp(12px, 2.8vw, 14px);
+  backdrop-filter: blur(6px);
+  transition: all 0.2s ease;
+  white-space: nowrap;
 }
 
 #ui button:hover {
-  background: rgba(255,255,255,0.15);
+  background: var(--ui-bg-hover);
+  transform: translateY(-1px);
+}
+
+/* TABLET */
+@media (max-width: 900px) {
+  #ui {
+    top: 12px;
+    left: 12px;
+  }
+
+  #ui button {
+    font-size: clamp(12px, 3.2vw, 15px);
+  }
+}
+
+/* MÓVIL */
+@media (max-width: 600px) {
+  #ui {
+    top: auto;
+    bottom: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    background: rgba(0,0,0,0.45);
+    padding: 6px 10px;
+    border-radius: 14px;
+    backdrop-filter: blur(8px);
+  }
+
+  #ui button {
+    font-size: clamp(12px, 3.5vw, 14px);
+    padding: 10px 14px;
+    border-radius: 12px;
+  }
 }
 </style>
 </head>
