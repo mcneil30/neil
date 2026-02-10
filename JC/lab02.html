@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Laberinto</title>
+<script src="https://cdn.babylonjs.com/babylon.js"></script>
+<script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+
+<style>
+html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+canvas { width:100%; height:100%; touch-action:none; }
+
+#ui {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 10;
+}
+
+#ui button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  cursor: pointer;
+  font-size: 13px;
+  backdrop-filter: blur(5px);
+}
+
+#ui button:hover {
+  background: rgba(255,255,255,0.15);
+}
+</style>
+</head>
+
+<body>
+
+<div id="ui">
+  <button id="btnTorre">Paredes</button>
+  <button id="btnRopa">Trabes y columnas</button>
+  <button id="btnSoldados">Ruta</button>
+</div>
+
+<canvas id="renderCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("renderCanvas");
+const engine = new BABYLON.Engine(canvas, true);
+
+let touring = true;
+let torre, ropa, soldados;
+
+async function loadModel(scene, file, position) {
+  const res = await BABYLON.SceneLoader.ImportMeshAsync("", "./", file, scene);
+  const mesh = res.meshes.find(m => m instanceof BABYLON.Mesh);
+  mesh.position.copyFrom(position);
+  return mesh;
+}
+
+const createScene = async () => {
+  const scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color4(0.01,0.01,0.05,1);
+
+  const camera = new BABYLON.ArcRotateCamera("cam",
+    Math.PI/2, Math.PI/3, 160,
+    new BABYLON.Vector3(0,10,0), scene);
+  camera.attachControl(canvas,true);
+
+  camera.lowerRadiusLimit = 10;
+  camera.upperRadiusLimit = 300;
+
+  scene.onBeforeRenderObservable.add(()=>{
+    if(camera.radius > 95 && touring) camera.radius -= 0.6;
+  });
+
+  canvas.addEventListener("pointerdown",()=> touring = false);
+
+  const moon = new BABYLON.DirectionalLight("moon", new BABYLON.Vector3(-1,-2,-1), scene);
+  moon.position = new BABYLON.Vector3(50,100,50);
+  moon.intensity = 0.9;
+
+  const amb = new BABYLON.HemisphericLight("amb", new BABYLON.Vector3(0,1,0), scene);
+  amb.intensity = 0.18;
+
+  const ground = BABYLON.MeshBuilder.CreateGround("g",{width:1000,height:1000},scene);
+  ground.position.y = -0.02;
+
+  await BABYLON.SceneLoader.ImportMeshAsync("", "./", "el_laberinto.glb", scene);
+
+  torre = await loadModel(scene,"paredes.glb", new BABYLON.Vector3(0,0,0));
+  ropa = await loadModel(scene,"trabes_columnas.glb", new BABYLON.Vector3(0,0,0));
+  soldados = await loadModel(scene,"ruta_color.glb", new BABYLON.Vector3(0,0,0));
+
+  return scene;
+};
+
+createScene().then(scene => {
+  engine.runRenderLoop(()=> scene.render());
+});
+
+// 🎛️ BOTONES UI
+document.getElementById("btnTorre").onclick = () => {
+  if (torre) torre.setEnabled(!torre.isEnabled());
+};
+
+document.getElementById("btnRopa").onclick = () => {
+  if (ropa) ropa.setEnabled(!ropa.isEnabled());
+};
+
+document.getElementById("btnSoldados").onclick = () => {
+  if (soldados) soldados.setEnabled(!soldados.isEnabled());
+};
+
+window.addEventListener("resize",()=> engine.resize());
+</script>
+
+</body>
+</html>
