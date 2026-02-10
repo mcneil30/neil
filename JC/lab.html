@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <title>Laberinto</title>
+  <script src="https://cdn.babylonjs.com/babylon.js"></script>
+  <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
+  <style>
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; }
+    canvas { width:100%; height:100%; touch-action:none; }
+  </style>
+</head>
+<body>
+<canvas id="renderCanvas"></canvas>
+
+<script>
+const canvas = document.getElementById("renderCanvas");
+const engine = new BABYLON.Engine(canvas, true);
+
+let touring = true;
+
+const createScene = async () => {
+  const scene = new BABYLON.Scene(engine);
+  scene.clearColor = new BABYLON.Color4(0.01,0.01,0.05,1);
+
+  // 📷 Cámara cinematográfica
+  const camera = new BABYLON.ArcRotateCamera(
+    "cam",
+    Math.PI/2,
+    Math.PI/3,
+    160,
+    new BABYLON.Vector3(0,10,0),
+    scene
+  );
+  camera.attachControl(canvas, true);
+
+  camera.lowerBetaLimit = 0.15;
+  camera.upperBetaLimit = Math.PI/2.1;
+  camera.lowerRadiusLimit = 8;
+  camera.upperRadiusLimit = 300;
+  camera.inertia = 0.85;
+  camera.panningSensibility = 0;
+
+  // 🎬 Dolly suave inicial
+  scene.onBeforeRenderObservable.add(() => {
+    if (camera.radius > 45 && touring) {
+      camera.radius -= 0.6;
+    }
+  });
+
+  canvas.addEventListener("pointerdown", () => touring = false);
+
+  // 💡 Iluminación
+  const moon = new BABYLON.DirectionalLight(
+    "moon",
+    new BABYLON.Vector3(-1, -2, -1),
+    scene
+  );
+  moon.position = new BABYLON.Vector3(50, 100, 50);
+  moon.intensity = 0.9;
+
+  const amb = new BABYLON.HemisphericLight(
+    "amb",
+    new BABYLON.Vector3(0, 1, 0),
+    scene
+  );
+  amb.intensity = 0.18;
+
+  // 🌍 Suelo neutro
+  const ground = BABYLON.MeshBuilder.CreateGround(
+    "g",
+    { width: 1000, height: 1000 },
+    scene
+  );
+  ground.position.y = -0.02;
+
+  const groundMat = new BABYLON.PBRMaterial("groundMat", scene);
+  groundMat.albedoColor = new BABYLON.Color3(0.1, 0.1, 0.1);
+  groundMat.roughness = 0.9;
+  groundMat.metallic = 0.0;
+  ground.material = groundMat;
+
+  // 🧱 Cargar ÚNICO modelo
+  await BABYLON.SceneLoader.ImportMeshAsync(
+    "",
+    "./",
+    "entrada_laberinto.glb",
+    scene
+  );
+
+  return scene;
+};
+
+createScene().then(scene => {
+  engine.runRenderLoop(() => scene.render());
+});
+
+window.addEventListener("resize", () => engine.resize());
+</script>
+</body>
+</html>
