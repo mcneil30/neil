@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Laberinto</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <script src="https://cdn.babylonjs.com/babylon.js"></script>
 <script src="https://cdn.babylonjs.com/loaders/babylon.glTF2FileLoader.js"></script>
 
@@ -27,7 +28,6 @@ canvas {
   touch-action:none;
 }
 
-/* CONTENEDOR UI */
 #ui {
   position: fixed;
   top: 14px;
@@ -38,7 +38,6 @@ canvas {
   z-index: 10;
 }
 
-/* BOTONES */
 #ui button {
   padding: clamp(6px, 1.5vw, 12px) clamp(10px, 2.5vw, 16px);
   border: none;
@@ -49,45 +48,11 @@ canvas {
   font-size: clamp(12px, 2.8vw, 14px);
   backdrop-filter: blur(6px);
   transition: all 0.2s ease;
-  white-space: nowrap;
 }
 
 #ui button:hover {
   background: var(--ui-bg-hover);
   transform: translateY(-1px);
-}
-
-/* TABLET */
-@media (max-width: 900px) {
-  #ui {
-    top: 12px;
-    left: 12px;
-  }
-
-  #ui button {
-    font-size: clamp(12px, 3.2vw, 15px);
-  }
-}
-
-/* MÓVIL */
-@media (max-width: 600px) {
-  #ui {
-    top: auto;
-    bottom: 12px;
-    left: 50%;
-    transform: translateX(-50%);
-    flex-direction: row;
-    background: rgba(0,0,0,0.45);
-    padding: 6px 10px;
-    border-radius: 14px;
-    backdrop-filter: blur(8px);
-  }
-
-  #ui button {
-    font-size: clamp(12px, 3.5vw, 14px);
-    padding: 10px 14px;
-    border-radius: 12px;
-  }
 }
 </style>
 </head>
@@ -98,6 +63,8 @@ canvas {
   <button id="btnTorre">Paredes</button>
   <button id="btnRopa">Trabes y columnas</button>
   <button id="btnSoldados">Ruta</button>
+  <button id="btnNeon">Neón</button>
+  <button id="btnCamaras">Cámaras</button>
 </div>
 
 <canvas id="renderCanvas"></canvas>
@@ -107,24 +74,99 @@ const canvas = document.getElementById("renderCanvas");
 const engine = new BABYLON.Engine(canvas, true);
 
 let touring = true;
-let torre, ropa, soldados;
+let torre = null;
+let ropa = null;
+let soldados = null;
+let neon = null;
+let camaras = null;
+let scene;
+
+// ================== CARGA DE MODELOS ==================
 
 async function loadModel(scene, file, position) {
   const res = await BABYLON.SceneLoader.ImportMeshAsync("", "./", file, scene);
-  const mesh = res.meshes.find(m => m instanceof BABYLON.Mesh);
-  mesh.position.copyFrom(position);
-  return mesh;
+
+  const root = new BABYLON.TransformNode(file + "_root", scene);
+
+  res.meshes.forEach(m => {
+    if (!m.parent) m.parent = root;
+  });
+
+  root.position.copyFrom(position);
+  return root;
 }
 
+// ================== FADE ==================
+
+function fadeIn(node, duration = 20) {
+  if (!node) return;
+
+  node.setEnabled(true);
+  node.visibility = 0;
+
+  const anim = new BABYLON.Animation(
+    "fadeIn",
+    "visibility",
+    60,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  );
+
+  anim.setKeys([
+    { frame: 0, value: 0 },
+    { frame: duration, value: 1 }
+  ]);
+
+  node.animations = [];
+  node.animations.push(anim);
+  scene.beginAnimation(node, 0, duration, false);
+}
+
+function fadeOut(node, duration = 20) {
+  if (!node) return;
+
+  const anim = new BABYLON.Animation(
+    "fadeOut",
+    "visibility",
+    60,
+    BABYLON.Animation.ANIMATIONTYPE_FLOAT,
+    BABYLON.Animation.ANIMATIONLOOPMODE_CONSTANT
+  );
+
+  anim.setKeys([
+    { frame: 0, value: 1 },
+    { frame: duration, value: 0 }
+  ]);
+
+  node.animations = [];
+  node.animations.push(anim);
+
+  scene.beginAnimation(node, 0, duration, false, 1, () => {
+    node.setEnabled(false);
+  });
+}
+
+// ================== ESCENA ==================
+
 const createScene = async () => {
-  const scene = new BABYLON.Scene(engine);
-  scene.clearColor = new BABYLON.Color4(0.01,0.01,0.05,1);
+  scene = new BABYLON.Scene(engine);
 
-  const camera = new BABYLON.ArcRotateCamera("cam",
-    Math.PI/2, Math.PI/3, 160,
-    new BABYLON.Vector3(0,10,0), scene);
+  scene.clearColor = new BABYLON.Color4(0.005,0.005,0.02,1);
+
+  scene.fogMode = BABYLON.Scene.FOGMODE_EXP2;
+  scene.fogDensity = 0.03;
+  scene.fogColor = new BABYLON.Color3(0.03, 0.03, 0.06);
+
+  const camera = new BABYLON.ArcRotateCamera(
+    "cam",
+    Math.PI/2,
+    Math.PI/3,
+    160,
+    new BABYLON.Vector3(0,10,0),
+    scene
+  );
+
   camera.attachControl(canvas,true);
-
   camera.lowerRadiusLimit = 8;
   camera.upperRadiusLimit = 300;
 
@@ -134,40 +176,79 @@ const createScene = async () => {
 
   canvas.addEventListener("pointerdown",()=> touring = false);
 
-  const moon = new BABYLON.DirectionalLight("moon", new BABYLON.Vector3(-1,-2,-1), scene);
-  moon.position = new BABYLON.Vector3(50,100,50);
-  moon.intensity = 0.9;
+  const moon = new BABYLON.DirectionalLight(
+    "moon",
+    new BABYLON.Vector3(-0.4,-1,-0.3),
+    scene
+  );
+  moon.intensity = 0.6;
+  moon.diffuse = new BABYLON.Color3(0.7, 0.8, 1);
 
-  const amb = new BABYLON.HemisphericLight("amb", new BABYLON.Vector3(0,1,0), scene);
-  amb.intensity = 0.18;
+  const amb = new BABYLON.HemisphericLight(
+    "amb",
+    new BABYLON.Vector3(0,1,0),
+    scene
+  );
+  amb.intensity = 0.08;
 
-  const ground = BABYLON.MeshBuilder.CreateGround("g",{width:1000,height:1000},scene);
-  ground.position.y = -0.02;
+  BABYLON.MeshBuilder.CreateGround("g",{width:1000,height:1000},scene);
+
+  const pipeline = new BABYLON.DefaultRenderingPipeline(
+    "pipeline", true, scene, [camera]
+  );
+
+  pipeline.bloomEnabled = true;
+  pipeline.bloomWeight = 0.08;
+  pipeline.imageProcessingEnabled = true;
+  pipeline.imageProcessing.contrast = 1.3;
+  pipeline.imageProcessing.exposure = 0.85;
+  pipeline.imageProcessing.toneMappingEnabled = true;
 
   await BABYLON.SceneLoader.ImportMeshAsync("", "./", "el_laberinto.glb", scene);
 
-  torre = await loadModel(scene,"paredes.glb", new BABYLON.Vector3(0,0,0));
-  ropa = await loadModel(scene,"trabes_columnas.glb", new BABYLON.Vector3(0,0,0));
-  soldados = await loadModel(scene,"ruta_color.glb", new BABYLON.Vector3(0,0,0));
+  // MODELOS
+  torre = await loadModel(scene,"paredes.glb", BABYLON.Vector3.Zero());
+  ropa = await loadModel(scene,"trabes_columnas.glb", BABYLON.Vector3.Zero());
+  soldados = await loadModel(scene,"ruta_color.glb", BABYLON.Vector3.Zero());
+  neon = await loadModel(scene,"neon.glb", BABYLON.Vector3.Zero());
+  camaras = await loadModel(scene,"camarografos.glb", BABYLON.Vector3.Zero());
+
+  const models = [torre, ropa, soldados, neon, camaras];
+
+  models.forEach((m, i) => {
+    m.setEnabled(false);
+    setTimeout(() => fadeIn(m, 25), 200 + i * 350);
+  });
+
+  scene.blockMaterialDirtyMechanism = true;
 
   return scene;
 };
 
-createScene().then(scene => {
+createScene().then(() => {
   engine.runRenderLoop(()=> scene.render());
 });
 
-// 🎛️ BOTONES UI
+// ================== BOTONES ==================
+
 document.getElementById("btnTorre").onclick = () => {
-  if (torre) torre.setEnabled(!torre.isEnabled());
+  torre?.isEnabled() ? fadeOut(torre) : fadeIn(torre);
 };
 
 document.getElementById("btnRopa").onclick = () => {
-  if (ropa) ropa.setEnabled(!ropa.isEnabled());
+  ropa?.isEnabled() ? fadeOut(ropa) : fadeIn(ropa);
 };
 
 document.getElementById("btnSoldados").onclick = () => {
-  if (soldados) soldados.setEnabled(!soldados.isEnabled());
+  soldados?.isEnabled() ? fadeOut(soldados) : fadeIn(soldados);
+};
+
+document.getElementById("btnNeon").onclick = () => {
+  neon?.isEnabled() ? fadeOut(neon) : fadeIn(neon);
+};
+
+document.getElementById("btnCamaras").onclick = () => {
+  camaras?.isEnabled() ? fadeOut(camaras) : fadeIn(camaras);
 };
 
 window.addEventListener("resize",()=> engine.resize());
